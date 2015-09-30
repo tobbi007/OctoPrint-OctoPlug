@@ -28,7 +28,7 @@ Click "Plugin Manager" on the left side
 
 Click the "Get More..." button
 
-Find OctoPlug in the list and click "Install" or enter this GitUrl to "... from URL"
+Find OctoPlug in the list (soon) and click "Install" or enter this "https://github.com/tobbi007/OctoPrint-OctoPlug/archive/master.zip" to "... from URL"
 
 Restart octoprint
 
@@ -45,7 +45,3 @@ Finally hit save. Open up settings again and press "Test Configuration". If you 
 
 #Features
 The Plugin also hooks to the GCode command M106 and M106 S0, which are the button "Fan on" and "Fan off" in your printers control tab. 
-
-
-#Plan
-Include more Settings to make everything toggleable.
