@@ -8,6 +8,10 @@ This plugin has only been testet with the Edimax SP1101W SmartPlug
 (http://www.edimax.com/edimax/merchandise/merchandise_detail/data/edimax/au/home_automation_smart_plug/sp-1101w/)
 I currently do not own one of the newer generations, so I cannot test them.
 
+#Credits
+This Plugin uses a slightly edited version of the Ediplug-py Project by wendlers.
+You can find his repository right here: https://github.com/wendlers/ediplug-py
+
 # Installing
 Open a browser to octoprint (http://ipaddress/) and login
 
