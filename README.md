@@ -14,6 +14,11 @@ This Plugin uses a slightly edited version of the Ediplug-py Project by wendlers
 
 You can find his repository right here: https://github.com/wendlers/ediplug-py
 
+
+#Requirements
+The requests library (e.g. use pip install requests)
+
+
 # Installing
 Open a browser to octoprint (http://ipaddress/) and login
 
@@ -40,3 +45,7 @@ Finally hit save. Open up settings again and press "Test Configuration". If you 
 
 #Features
 The Plugin also hooks to the GCode command M106 and M106 S0, which are the button "Fan on" and "Fan off" in your printers control tab. 
+
+
+#Plan
+Include more Settings to make everything toggleable.
