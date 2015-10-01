@@ -1,9 +1,9 @@
 # coding=utf-8
 from __future__ import absolute_import
+from . import smartplug
 
 import octoprint.plugin
 import octoprint.events
-import subprocess
 
 class OctoPlugPlugin(  octoprint.plugin.StartupPlugin,
                        octoprint.plugin.TemplatePlugin,
@@ -17,13 +17,15 @@ class OctoPlugPlugin(  octoprint.plugin.StartupPlugin,
 		self._logger.info("OctoPlugPlugin started!")
 		self.currentlayer = 0
 		self.printing = False
+		self.ediplug = smartplug.SmartPlug(self._settings.get(["ip"]), self._settings.get(["port"]), (self._settings.get(["usr"]),self._settings.get(["pwd"])))
 
 	def get_settings_defaults(self):
 		return dict(
-			ip="192.168.0.172",
-			port="10000",
-			usr="admin",
-			pwd="",
+			ip=None,
+			port=None,
+			usr=None,
+			pwd=None,
+			reactgcode=True,
 			layer="3"
 		)
 
@@ -42,28 +44,21 @@ class OctoPlugPlugin(  octoprint.plugin.StartupPlugin,
 			plugOn=[],
 			plugOff=[]
 		)
-
-	def changePlugStatus(self, state):
-		if state == "on" or state == "ON":
-			self._logger.info("Ediplug turned on")	
-			subprocess.Popen("python "+self._basefolder+"/smartplug.py -H "+self._settings.get(["ip"])+" -C "+self._settings.get(["port"])+" -l "+self._settings.get(["usr"])+" -p "+self._settings.get(["pwd"])+ " -s ON", shell=True)
-		elif state == "off" or state == "OFF":
-			self._logger.info("Ediplug turned off")
-			subprocess.Popen("python "+self._basefolder+"/smartplug.py -H "+self._settings.get(["ip"])+" -C "+self._settings.get(["port"])+" -l "+self._settings.get(["usr"])+" -p "+self._settings.get(["pwd"])+ " -s OFF", shell=True)
 	
 	def on_api_command(self, command, data):
 		if command == "plugOn":
-			self.changePlugStatus("on")
+			self.ediplug.state = "ON"
 		elif command == "plugOff":
-			self.changePlugStatus("off")
+			self.ediplug.state = "OFF"
 				
-	def onboardFanHook(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
-		if cmd and cmd == "M106":
-			self.changePlugStatus("on")
-		elif cmd and cmd == "M106 S0":
-			self.changePlugStatus("off")
+	def gcodeFanHook(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
+		if self._settings.get(["reactgcode"]):
+			if gcode == "M106" and "S0" not in cmd:
+				self.ediplug.state = "ON"
+			elif (gcode == "M106" and "S0" in cmd) or gcode == "M107":
+				self.ediplug.state = "OFF"
 	
-	def on_event(self, event, payload):
+	def on_event(self, event, payload):	
 		if event == octoprint.events.Events.PRINT_STARTED:
 			self.currentlayer = 0
 			self.printing = True
@@ -72,17 +67,20 @@ class OctoPlugPlugin(  octoprint.plugin.StartupPlugin,
 			if self.printing == True:
 				self.currentlayer += 1
 				if str(self.currentlayer) == str(self._settings.get(["layer"])):
-					self.changePlugStatus("on")
+					self.ediplug.state = "ON"
 					
 		elif event == "PrintFailed" or event == "PrintDone" or event == "PrintCancelled" or event == "PrintPaused":
-			self.changePlugStatus("off")
+			self.ediplug.state = "OFF"
 			self.printing = False
 			
-		elif event == "PrintResumed":
-			self.changePlugStatus("on")
+		elif event == "PrintResumed" and self.currentlayer > self._settings.get(["layer"]):
+			self.ediplug.state = "ON"
 			self.printing = True
+			
+		elif event == "SettingsUpdated":
+			self.ediplug = smartplug.SmartPlug(self._settings.get(["ip"]), self._settings.get(["port"]), (self._settings.get(["usr"]),self._settings.get(["pwd"])))
 
 		
 __plugin_name__ = "OctoPlug"
 __plugin_implementation__ = OctoPlugPlugin()
-__plugin_hooks__ = {"octoprint.comm.protocol.gcode.queuing": __plugin_implementation__.onboardFanHook}
+__plugin_hooks__ = {"octoprint.comm.protocol.gcode.queuing": __plugin_implementation__.gcodeFanHook}
