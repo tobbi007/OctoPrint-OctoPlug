@@ -2,6 +2,13 @@
 <h2>{{ _('Configuration') }}</h2>
 
 <form class="form-horizontal">
+	<div class="control-group">
+        <label class="control-label">{{ _('Enable OctoPlug') }}</label>
+        <div class="controls">
+            <input type="checkbox" class="input-block-level" data-bind="checked: settings.plugins.octoplug.enabled">
+        </div>
+    </div>
+
     <div class="control-group">
         <label class="control-label" >{{ _('Host') }}</label>
         <div class="controls">
@@ -27,20 +34,52 @@
         </div>
     </div>
 	
+<h3>{{ _('Trigger...') }}</h3>
+	
 	<div class="control-group">
-        <label class="control-label">{{ _('Autostart at Layer') }}</label>
+        <label class="control-label">{{ _('... by GCode') }}</label>
         <div class="controls">
-            <input type="number" class="input-block-level" data-bind="value: settings.plugins.octoplug.layer">
+            <input type="checkbox" class="input-block-level" data-bind="checked: settings.plugins.octoplug.triggerGcode">
         </div>
     </div>
 	
 	<div class="control-group">
-        <label class="control-label">{{ _('On/off on gcode fan') }}</label>
+        <label class="control-label">{{ _('Gcode type:') }}</label>
         <div class="controls">
-            <input type="checkbox" class="input-block-level" data-bind="checked: settings.plugins.octoplug.reactgcode">
+			<select class="input-block" data-bind="value: settings.plugins.octoplug.valueGcode">
+				<option>RepRap</option>
+				<option>MakerBot</option>
+			</select>
         </div>
     </div>
 	
+	<div class="control-group">
+        <label class="control-label">{{ _('... by Layercount') }}</label>
+        <div class="controls">
+            <input type="checkbox" class="input" data-bind="checked: settings.plugins.octoplug.triggerLayer">
+        </div>
+    </div>
+	
+	<div class="control-group">
+        <label class="control-label">{{ _('Layer No.') }}</label>
+        <div class="controls">
+            <input type="number" class="input" data-bind="value: settings.plugins.octoplug.valueLayer">
+        </div>
+    </div>
+	
+	<div class="control-group">
+        <label class="control-label">{{ _('... by Percentage') }}</label>
+        <div class="controls">
+            <input type="checkbox" class="input" data-bind="checked: settings.plugins.octoplug.triggerPercentage">
+        </div>
+    </div>
+	
+	<div class="control-group">
+        <label class="control-label">{{ _('Precentage') }}</label>
+        <div class="controls">
+            <input type="number" class="input" data-bind="value: settings.plugins.octoplug.valuePercentage">
+        </div>
+    </div>
 	<a class="btn btn-block" href="#" onclick="testConfig()">{{ _('Test Configuration') }}</a>
 </form>
 
